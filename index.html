@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Alice — APARD Capital</title>
+<title>Lure — APARD Capital</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@300;400;600&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -51,15 +51,15 @@ body{background:#2a3a2e;display:flex;align-items:center;justify-content:center;m
 
 .msg-wrap{display:flex;flex-direction:column;animation:msgIn .22s ease;}
 @keyframes msgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.msg-wrap.alice{align-items:flex-start;}
+.msg-wrap.lure{align-items:flex-start;}
 .msg-wrap.user{align-items:flex-end;}
 
 .msg-sender{font-size:10px;font-weight:600;letter-spacing:.8px;margin-bottom:3px;padding:0 4px;}
-.msg-wrap.alice .msg-sender{color:var(--glt);}
+.msg-wrap.lure .msg-sender{color:var(--glt);}
 .msg-wrap.user  .msg-sender{color:#8a7b3a;}
 
 .bubble{max-width:84%;padding:9px 13px;border-radius:16px;font-size:13.5px;line-height:1.65;word-break:break-word;}
-.msg-wrap.alice .bubble{background:#fff;color:var(--text);border-bottom-left-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,.07);}
+.msg-wrap.lure .bubble{background:#fff;color:var(--text);border-bottom-left-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,.07);}
 .msg-wrap.user  .bubble{background:#dcf8c6;color:var(--text);border-bottom-right-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,.07);}
 
 .msg-time{font-size:10px;color:#aaa;margin-top:2px;padding:0 4px;}
@@ -102,7 +102,7 @@ body{background:#2a3a2e;display:flex;align-items:center;justify-content:center;m
   <div class="hdr">
     <div class="av">A</div>
     <div class="hdr-info">
-      <div class="hdr-name">Alice</div>
+      <div class="hdr-name">Lure</div>
       <div class="hdr-sub"><span class="dot"></span>Assistente APARD Capital</div>
     </div>
     <div class="hdr-brand">APARD</div>
@@ -111,7 +111,7 @@ body{background:#2a3a2e;display:flex;align-items:center;justify-content:center;m
   <!-- SCENARIO PICKER -->
   <div class="scenario-screen" id="scenarioScreen">
     <div class="sc-title">Escolha o cenário de teste</div>
-    <div class="sc-sub">Simule como um lead real chegaria até a Alice em cada situação</div>
+    <div class="sc-sub">Simule como um lead real chegaria até a Lure em cada situação</div>
     <div class="sc-cards">
 
       <div class="sc-card" onclick="startChat('campanha_calc', 'Oi, baixei a calculadora de vocês')">
@@ -149,7 +149,7 @@ body{background:#2a3a2e;display:flex;align-items:center;justify-content:center;m
   <div class="chat-screen" id="chatScreen">
     <div class="msgs" id="msgs"></div>
     <div class="typing-wrap" id="typing">
-      <div class="typing-lbl">Alice</div>
+      <div class="typing-lbl">Lure</div>
       <div class="typing-bub">
         <div class="td"></div><div class="td"></div><div class="td"></div>
       </div>
@@ -165,11 +165,11 @@ body{background:#2a3a2e;display:flex;align-items:center;justify-content:center;m
 
 </div>
 <script>
-const PROMPT = `Você se chama Alice e é a assistente oficial da APARD Capital.
+const PROMPT = `Você se chama Lure e é a assistente oficial da APARD Capital.
 
 Você representa uma empresa de educação financeira e consultoria de investimentos fundada por Marcos Banuth — consultor de valores mobiliários credenciado pela CVM e certificado CEA pela ANBIMA. Missão: democratizar o acesso ao conhecimento financeiro. Tagline: "Cuidar do que sustenta."
 
-Se perguntarem se você é IA, responda honestamente: "Sou a Alice, assistente virtual da APARD Capital. Posso te ajudar aqui, mas se precisar falar com o Marcos diretamente, posso te conectar."
+Se perguntarem se você é IA, responda honestamente: "Sou a Lure, assistente virtual da APARD Capital. Posso te ajudar aqui, mas se precisar falar com o Marcos diretamente, posso te conectar."
 
 TOM E FORMATO — REGRAS ABSOLUTAS DE WHATSAPP:
 - NUNCA escreva mais de 3 linhas em uma única mensagem. Isso é inegociável.
@@ -228,7 +228,7 @@ function addMsg(texto, papel) {
 
   const sender = document.createElement('div');
   sender.className = 'msg-sender';
-  sender.textContent = papel === 'alice' ? 'Alice' : 'Você (lead)';
+  sender.textContent = papel === 'lure' ? 'Lure' : 'Você (lead)';
 
   const bubble = document.createElement('div');
   bubble.className = 'bubble';
@@ -259,12 +259,12 @@ function setTyping(on) {
   if (on) document.getElementById('msgs').scrollTop = 99999;
 }
 
-async function callAlice(msgLead) {
+async function callLure(msgLead) {
   const cenario = CENARIOS[cenarioAtual];
   const msgs = [];
 
   // contexto inicial fixo
-  const ctx = `Contexto: lead chegou via ${cenario.label}.${cenario.isca ? ` Ele usou "${cenario.isca}" como isca.` : ' Veio pelo link da bio.'} Responda sempre como Alice, no tom do WhatsApp.`;
+  const ctx = `Contexto: lead chegou via ${cenario.label}.${cenario.isca ? ` Ele usou "${cenario.isca}" como isca.` : ' Veio pelo link da bio.'} Responda sempre como Lure, no tom do WhatsApp.`;
   msgs.push({ role: 'user', content: ctx });
   msgs.push({ role: 'assistant', content: 'Entendido.' });
 
@@ -306,13 +306,13 @@ async function startChat(cenario, primeiraMsgLead) {
 
   setTyping(true);
   try {
-    const resp = await callAlice(primeiraMsgLead);
+    const resp = await callLure(primeiraMsgLead);
     setTyping(false);
-    addMsg(resp, 'alice');
-    historico.push({ papel: 'alice', texto: resp });
+    addMsg(resp, 'lure');
+    historico.push({ papel: 'lure', texto: resp });
   } catch(e) {
     setTyping(false);
-    addMsg('Erro de conexão. Tente novamente.', 'alice');
+    addMsg('Erro de conexão. Tente novamente.', 'lure');
   }
 }
 
@@ -328,13 +328,13 @@ async function sendMsg() {
 
   setTyping(true);
   try {
-    const resp = await callAlice(txt);
+    const resp = await callLure(txt);
     setTyping(false);
-    addMsg(resp, 'alice');
-    historico.push({ papel: 'alice', texto: resp });
+    addMsg(resp, 'lure');
+    historico.push({ papel: 'lure', texto: resp });
   } catch(e) {
     setTyping(false);
-    addMsg('Erro de conexão. Tente novamente.', 'alice');
+    addMsg('Erro de conexão. Tente novamente.', 'lure');
   }
 }
 
