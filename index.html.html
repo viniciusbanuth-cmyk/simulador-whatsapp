@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alice — APARD Capital</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@300;400;600&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --gdk:#1D3828;--gmd:#2a4f38;--glt:#638968;
+  --gold:#C8B560;--gold-lt:#ddd09a;
+  --cream:#EEEAD6;--cream-alt:#f5f2e4;
+  --text:#2c2c2c;--muted:#6b6b6b;
+}
+html,body{height:100%;font-family:'Plus Jakarta Sans',sans-serif;}
+body{background:#2a3a2e;display:flex;align-items:center;justify-content:center;min-height:100vh;}
+
+/* ── APP SHELL ── */
+.app{display:flex;flex-direction:column;width:100%;max-width:440px;height:100vh;max-height:820px;background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,0.4);}
+
+/* ── HEADER ── */
+.hdr{background:var(--gdk);padding:14px 18px;display:flex;align-items:center;gap:12px;flex-shrink:0;border-bottom:2px solid var(--gold);}
+.av{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--glt),var(--gmd));border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:17px;color:var(--gold);font-weight:600;flex-shrink:0;}
+.hdr-info{flex:1;}
+.hdr-name{font-size:15px;font-weight:600;color:var(--cream);letter-spacing:.3px;}
+.hdr-sub{font-size:10px;color:var(--gold-lt);letter-spacing:.5px;margin-top:1px;display:flex;align-items:center;gap:5px;}
+.dot{width:6px;height:6px;border-radius:50%;background:#4ade80;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.hdr-brand{font-family:'Fraunces',serif;font-size:10px;color:var(--gold);letter-spacing:3px;opacity:.7;}
+
+/* ── SCENARIO PICKER ── */
+.scenario-screen{flex:1;background:#ece5d8;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 22px;gap:16px;}
+.sc-title{font-family:'Fraunces',serif;font-size:18px;color:var(--gdk);text-align:center;line-height:1.4;}
+.sc-sub{font-size:12px;color:var(--muted);text-align:center;line-height:1.6;max-width:300px;}
+.sc-cards{width:100%;display:flex;flex-direction:column;gap:10px;margin-top:4px;}
+.sc-card{background:#fff;border:1.5px solid #ddd8c4;border-radius:14px;padding:14px 16px;cursor:pointer;transition:all .2s;text-align:left;}
+.sc-card:hover{border-color:var(--gold);box-shadow:0 4px 16px rgba(200,181,96,.2);}
+.sc-card-label{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--glt);margin-bottom:4px;}
+.sc-card-title{font-size:13.5px;font-weight:600;color:var(--gdk);}
+.sc-card-desc{font-size:11.5px;color:var(--muted);margin-top:3px;line-height:1.5;}
+.sc-card-msg{font-size:11px;color:#888;margin-top:7px;padding:7px 10px;background:#f5f2e4;border-radius:8px;font-style:italic;}
+
+/* ── CHAT ── */
+.chat-screen{flex:1;display:none;flex-direction:column;overflow:hidden;}
+.chat-screen.active{display:flex;}
+
+.msgs{flex:1;overflow-y:auto;padding:16px 14px;display:flex;flex-direction:column;gap:8px;background:#ece5d8;}
+.msgs::-webkit-scrollbar{width:3px;}
+.msgs::-webkit-scrollbar-thumb{background:#ccc9b4;border-radius:2px;}
+
+.msg-wrap{display:flex;flex-direction:column;animation:msgIn .22s ease;}
+@keyframes msgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.msg-wrap.alice{align-items:flex-start;}
+.msg-wrap.user{align-items:flex-end;}
+
+.msg-sender{font-size:10px;font-weight:600;letter-spacing:.8px;margin-bottom:3px;padding:0 4px;}
+.msg-wrap.alice .msg-sender{color:var(--glt);}
+.msg-wrap.user  .msg-sender{color:#8a7b3a;}
+
+.bubble{max-width:84%;padding:9px 13px;border-radius:16px;font-size:13.5px;line-height:1.65;word-break:break-word;}
+.msg-wrap.alice .bubble{background:#fff;color:var(--text);border-bottom-left-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,.07);}
+.msg-wrap.user  .bubble{background:#dcf8c6;color:var(--text);border-bottom-right-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,.07);}
+
+.msg-time{font-size:10px;color:#aaa;margin-top:2px;padding:0 4px;}
+
+.sys-msg{text-align:center;font-size:10.5px;color:#aaa;background:rgba(255,255,255,.55);border-radius:10px;padding:4px 12px;align-self:center;}
+
+/* typing */
+.typing-wrap{padding:0 14px 8px;display:none;}
+.typing-wrap.on{display:flex;flex-direction:column;align-items:flex-start;gap:3px;}
+.typing-lbl{font-size:10px;font-weight:600;letter-spacing:.8px;color:var(--glt);padding:0 4px;}
+.typing-bub{background:#fff;border-radius:16px;border-bottom-left-radius:4px;padding:11px 14px;display:flex;gap:4px;align-items:center;box-shadow:0 1px 3px rgba(0,0,0,.07);}
+.td{width:7px;height:7px;border-radius:50%;background:var(--glt);animation:td 1.2s infinite;}
+.td:nth-child(2){animation-delay:.2s}
+.td:nth-child(3){animation-delay:.4s}
+@keyframes td{0%,60%,100%{transform:translateY(0);opacity:.5}30%{transform:translateY(-5px);opacity:1}}
+
+/* input */
+.input-area{background:#f0ede0;border-top:1px solid #ddd8c4;padding:9px 10px;display:flex;align-items:flex-end;gap:8px;flex-shrink:0;}
+.input-box{flex:1;background:#fff;border:1px solid #ccc9b4;border-radius:22px;padding:9px 15px;font-size:13.5px;font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);outline:none;resize:none;max-height:90px;line-height:1.5;transition:border-color .2s;}
+.input-box:focus{border-color:var(--gold);}
+.input-box::placeholder{color:#bbb;}
+.send-btn{width:42px;height:42px;border-radius:50%;background:var(--gdk);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s,transform .1s;}
+.send-btn:hover{background:var(--gmd);}
+.send-btn:active{transform:scale(.93);}
+.send-btn svg{width:19px;height:19px;fill:var(--cream);}
+
+.back-btn{background:none;border:1px solid rgba(200,181,96,.35);border-radius:6px;color:var(--gold);font-size:11px;font-family:'Plus Jakarta Sans',sans-serif;padding:5px 11px;cursor:pointer;transition:all .2s;flex-shrink:0;}
+.back-btn:hover{background:rgba(200,181,96,.1);}
+
+@media(max-width:500px){
+  body{background:#ece5d8;}
+  .app{max-width:100%;height:100vh;max-height:100vh;border-radius:0;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- HEADER -->
+  <div class="hdr">
+    <div class="av">A</div>
+    <div class="hdr-info">
+      <div class="hdr-name">Alice</div>
+      <div class="hdr-sub"><span class="dot"></span>Assistente APARD Capital</div>
+    </div>
+    <div class="hdr-brand">APARD</div>
+  </div>
+
+  <!-- SCENARIO PICKER -->
+  <div class="scenario-screen" id="scenarioScreen">
+    <div class="sc-title">Escolha o cenário de teste</div>
+    <div class="sc-sub">Simule como um lead real chegaria até a Alice em cada situação</div>
+    <div class="sc-cards">
+
+      <div class="sc-card" onclick="startChat('campanha_calc', 'Oi, baixei a calculadora de vocês')">
+        <div class="sc-card-label">Cenário 1 — Campanha paga</div>
+        <div class="sc-card-title">Lead da calculadora de aposentadoria</div>
+        <div class="sc-card-desc">Pessoa clicou no anúncio, usou a calculadora e mandou mensagem.</div>
+        <div class="sc-card-msg">"Oi, baixei a calculadora de vocês"</div>
+      </div>
+
+      <div class="sc-card" onclick="startChat('bio', 'Oi, vi o perfil de vocês no Instagram')">
+        <div class="sc-card-label">Cenário 2 — Link na bio</div>
+        <div class="sc-card-title">Lead orgânico do Instagram</div>
+        <div class="sc-card-desc">Pessoa viu o perfil, clicou no link da bio e abriu o WhatsApp.</div>
+        <div class="sc-card-msg">"Oi, vi o perfil de vocês no Instagram"</div>
+      </div>
+
+      <div class="sc-card" onclick="startChat('duvida_tecnica', 'Tenho dinheiro na poupança e quero saber se vale a pena mudar')">
+        <div class="sc-card-label">Cenário 3 — Dúvida técnica</div>
+        <div class="sc-card-title">Lead com pergunta específica</div>
+        <div class="sc-card-desc">Pessoa chega com uma dúvida concreta sobre investimentos.</div>
+        <div class="sc-card-msg">"Tenho dinheiro na poupança e quero saber se vale a pena mudar"</div>
+      </div>
+
+      <div class="sc-card" onclick="startChat('resistente', 'Quanto custa o curso?')">
+        <div class="sc-card-label">Cenário 4 — Lead direto ao ponto</div>
+        <div class="sc-card-title">Pergunta direto sobre o produto</div>
+        <div class="sc-card-desc">Pessoa já veio com intenção de compra, só quer saber o preço.</div>
+        <div class="sc-card-msg">"Quanto custa o curso?"</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CHAT -->
+  <div class="chat-screen" id="chatScreen">
+    <div class="msgs" id="msgs"></div>
+    <div class="typing-wrap" id="typing">
+      <div class="typing-lbl">Alice</div>
+      <div class="typing-bub">
+        <div class="td"></div><div class="td"></div><div class="td"></div>
+      </div>
+    </div>
+    <div class="input-area">
+      <button class="back-btn" onclick="goBack()">← Cenários</button>
+      <textarea class="input-box" id="input" placeholder="Digite sua mensagem..." rows="1"></textarea>
+      <button class="send-btn" onclick="sendMsg()">
+        <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+      </button>
+    </div>
+  </div>
+
+</div>
+<script>
+const PROMPT = `Você se chama Alice e é a assistente oficial da APARD Capital.
+
+Você representa uma empresa de educação financeira e consultoria de investimentos fundada por Marcos Banuth — consultor de valores mobiliários credenciado pela CVM e certificado CEA pela ANBIMA. Missão: democratizar o acesso ao conhecimento financeiro. Tagline: "Cuidar do que sustenta."
+
+Se perguntarem se você é IA, responda honestamente: "Sou a Alice, assistente virtual da APARD Capital. Posso te ajudar aqui, mas se precisar falar com o Marcos diretamente, posso te conectar."
+
+TOM E FORMATO (WhatsApp real):
+- Frases curtas, linguagem simples e acolhedora
+- Sem markdown: sem negrito, itálico, # ou listas com traço
+- Máximo 3-4 linhas por mensagem
+- Emojis: no máximo 1-2 por mensagem
+- Se precisar listar: use 1. 2. 3.
+- Nunca pressionar para compra
+
+PRODUTO — O Código do Investidor:
+Preço: R$ 97,90 | Link: https://apardcapital.com.br/apostila/
+Apostila completa com 9 módulos (120+ páginas): Mercado Financeiro, Renda Fixa, Renda Variável, Fundos, Perfil do Investidor, Montagem de Carteira, Economia.
+Bônus 1: Guia de Revisão Rápida (valor R$ 29,90 — grátis)
+Bônus 2: Guia Como Começar a Investir, 10 páginas práticas (valor R$ 19,90 — grátis)
+Bônus EXCLUSIVOS de plataforma (não estão na landing page — apresente como diferencial surpresa):
+1. Calculadora de IR sobre Investimentos
+2. Simulador de Renda Fixa (compara CDI, Tesouro, IPCA+, Poupança com IR já descontado)
+3. Diagnóstico Financeiro com IA
+4. Simulador de Investimentos completo
+
+FLUXO:
+- Fase 1: responder à primeira mensagem do lead se apresentando brevemente e fazendo UMA pergunta sobre o momento financeiro dele. Não ofereça o produto ainda.
+- Fase 2: diagnóstico — uma pergunta por vez. Entender: já investe? maior obstáculo? objetivo?
+- Fase 3: entregar uma dica ou explicação útil sobre o tema mencionado antes de oferecer qualquer coisa.
+- Fase 4: apresentar o produto conectando à dor identificada. Mencionar os bônus de plataforma como exclusividade da conversa.
+- Fase 5: suporte pós-oferta sem pressão.
+
+REGRAS:
+- Nunca recomendar ativos específicos
+- Nunca prometer rentabilidade garantida
+- Responder perguntas técnicas com clareza (renda fixa, ações, fundos, IR, planejamento)
+- Após resposta técnica, conectar ao produto de forma natural quando fizer sentido`;
+
+const CENARIOS = {
+  campanha_calc: { isca: 'calculadora de aposentadoria', label: 'Campanha — Calculadora' },
+  bio: { isca: '', label: 'Link da Bio — Instagram' },
+  duvida_tecnica: { isca: '', label: 'Dúvida técnica' },
+  resistente: { isca: '', label: 'Pergunta sobre o produto' }
+};
+
+let historico = [];
+let cenarioAtual = null;
+
+function getTime() {
+  return new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+}
+
+function addMsg(texto, papel) {
+  const msgs = document.getElementById('msgs');
+  const wrap = document.createElement('div');
+  wrap.className = `msg-wrap ${papel}`;
+
+  const sender = document.createElement('div');
+  sender.className = 'msg-sender';
+  sender.textContent = papel === 'alice' ? 'Alice' : 'Você (lead)';
+
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  bubble.textContent = texto;
+
+  const time = document.createElement('div');
+  time.className = 'msg-time';
+  time.textContent = getTime();
+
+  wrap.appendChild(sender);
+  wrap.appendChild(bubble);
+  wrap.appendChild(time);
+  msgs.appendChild(wrap);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function addSys(txt) {
+  const msgs = document.getElementById('msgs');
+  const d = document.createElement('div');
+  d.className = 'sys-msg';
+  d.textContent = txt;
+  msgs.appendChild(d);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function setTyping(on) {
+  document.getElementById('typing').className = 'typing-wrap' + (on ? ' on' : '');
+  if (on) document.getElementById('msgs').scrollTop = 99999;
+}
+
+async function callAlice(msgLead) {
+  const cenario = CENARIOS[cenarioAtual];
+  const msgs = [];
+
+  // contexto inicial fixo
+  const ctx = `Contexto: lead chegou via ${cenario.label}.${cenario.isca ? ` Ele usou "${cenario.isca}" como isca.` : ' Veio pelo link da bio.'} Responda sempre como Alice, no tom do WhatsApp.`;
+  msgs.push({ role: 'user', content: ctx });
+  msgs.push({ role: 'assistant', content: 'Entendido.' });
+
+  // histórico
+  historico.forEach(h => {
+    msgs.push({ role: h.papel === 'user' ? 'user' : 'assistant', content: h.texto });
+  });
+
+  msgs.push({ role: 'user', content: msgLead });
+
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      system: PROMPT,
+      messages: msgs
+    })
+  });
+  const data = await res.json();
+  return data.content?.[0]?.text || 'Desculpe, tente novamente.';
+}
+
+async function startChat(cenario, primeiraMsgLead) {
+  cenarioAtual = cenario;
+  historico = [];
+
+  document.getElementById('scenarioScreen').style.display = 'none';
+  const chat = document.getElementById('chatScreen');
+  chat.className = 'chat-screen active';
+  document.getElementById('msgs').innerHTML = '';
+
+  addSys('Cenário: ' + CENARIOS[cenario].label);
+
+  // lead manda a primeira mensagem
+  addMsg(primeiraMsgLead, 'user');
+  historico.push({ papel: 'user', texto: primeiraMsgLead });
+
+  setTyping(true);
+  try {
+    const resp = await callAlice(primeiraMsgLead);
+    setTyping(false);
+    addMsg(resp, 'alice');
+    historico.push({ papel: 'alice', texto: resp });
+  } catch(e) {
+    setTyping(false);
+    addMsg('Erro de conexão. Tente novamente.', 'alice');
+  }
+}
+
+async function sendMsg() {
+  const inp = document.getElementById('input');
+  const txt = inp.value.trim();
+  if (!txt) return;
+  inp.value = '';
+  inp.style.height = 'auto';
+
+  addMsg(txt, 'user');
+  historico.push({ papel: 'user', texto: txt });
+
+  setTyping(true);
+  try {
+    const resp = await callAlice(txt);
+    setTyping(false);
+    addMsg(resp, 'alice');
+    historico.push({ papel: 'alice', texto: resp });
+  } catch(e) {
+    setTyping(false);
+    addMsg('Erro de conexão. Tente novamente.', 'alice');
+  }
+}
+
+function goBack() {
+  document.getElementById('chatScreen').className = 'chat-screen';
+  document.getElementById('scenarioScreen').style.display = '';
+  historico = [];
+  cenarioAtual = null;
+}
+
+document.getElementById('input').addEventListener('input', function(){
+  this.style.height = 'auto';
+  this.style.height = Math.min(this.scrollHeight, 90) + 'px';
+});
+
+document.getElementById('input').addEventListener('keydown', function(e){
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
+});
+</script>
+</body>
+</html>
